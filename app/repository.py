@@ -1,6 +1,6 @@
-from pathlib import Path
 import re
 import shutil
+from pathlib import Path
 from urllib.parse import urlparse
 
 import httpx
@@ -65,32 +65,34 @@ async def from_github(repo_url: str, audit_id: str):
         headers["Authorization"] = "Bearer " + settings.github_token
 
     try:
-        async with httpx.AsyncClient(timeout=60, follow_redirects=True) as client:
-            async with client.stream(
+        async with (
+            httpx.AsyncClient(timeout=60, follow_redirects=True) as client,
+            client.stream(
                 "GET",
                 f"https://api.github.com/repos/{owner}/{repo}/zipball",
                 headers=headers,
-            ) as response:
-                if response.status_code == 404:
-                    raise RepositoryError(
-                        "GitHub repository not found. Check the owner and repository name, and make sure it is public."
-                    )
-                if response.status_code in (403, 429):
-                    raise GitHubFetchError(
-                        "GitHub rate-limited this request. Wait a few minutes or configure a GitHub token in the backend environment."
-                    )
-                if response.is_error:
-                    raise GitHubFetchError(
-                        f"GitHub returned HTTP {response.status_code} while fetching the repository archive."
-                    )
+            ) as response,
+        ):
+            if response.status_code == 404:
+                raise RepositoryError(
+                    "GitHub repository not found. Check the owner and repository name, and make sure it is public."
+                )
+            if response.status_code in (403, 429):
+                raise GitHubFetchError(
+                    "GitHub rate-limited this request. Wait a few minutes or configure a GitHub token in the backend environment."
+                )
+            if response.is_error:
+                raise GitHubFetchError(
+                    f"GitHub returned HTTP {response.status_code} while fetching the repository archive."
+                )
 
-                total = 0
-                with archive.open("wb") as out:
-                    async for chunk in response.aiter_bytes():
-                        total += len(chunk)
-                        if total > settings.max_upload_mb * 1024 * 1024:
-                            raise RepositoryError("Repository archive exceeds size limit.")
-                        out.write(chunk)
+            total = 0
+            with archive.open("wb") as out:
+                async for chunk in response.aiter_bytes():
+                    total += len(chunk)
+                    if total > settings.max_upload_mb * 1024 * 1024:
+                        raise RepositoryError("Repository archive exceeds size limit.")
+                    out.write(chunk)
 
         extracted = workspace / "source"
         safe_extract_zip(archive, extracted)

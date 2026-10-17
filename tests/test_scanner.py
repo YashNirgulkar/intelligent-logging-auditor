@@ -1,5 +1,6 @@
 from app.scanner import analyze_python_file
 
+
 def test_risky_function_without_logging_flagged():
     findings=analyze_python_file("a.py","def f(url):\n    requests.get(url)\n")
     assert any(f.rule=="risky_operation_without_logging" for f in findings)

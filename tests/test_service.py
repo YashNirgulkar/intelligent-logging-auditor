@@ -1,6 +1,8 @@
 import pytest
+
+from app import service
 from app.schemas import Finding
-import app.service as service
+
 
 def test_apply_requires_approval(monkeypatch,tmp_path):
     monkeypatch.setattr(service.settings,"app_data_dir",tmp_path)

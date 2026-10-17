@@ -1,6 +1,9 @@
-from pathlib import Path
-import zipfile, pytest
-from app.security import safe_extract_zip, UnsafeArchiveError, validate_relative_path
+import zipfile
+
+import pytest
+
+from app.security import UnsafeArchiveError, safe_extract_zip, validate_relative_path
+
 
 def test_zip_traversal_rejected(tmp_path):
     z=tmp_path/"bad.zip"

@@ -1,5 +1,5 @@
-from pathlib import Path, PurePosixPath
 import zipfile
+from pathlib import Path, PurePosixPath
 
 
 class UnsafeArchiveError(ValueError):

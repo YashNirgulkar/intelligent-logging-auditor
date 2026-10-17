@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, HttpUrl
 
+
 class GitHubAuditRequest(BaseModel):
     repo_url: HttpUrl
 class ApplyRequest(BaseModel):

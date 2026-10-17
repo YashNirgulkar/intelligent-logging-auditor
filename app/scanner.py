@@ -4,7 +4,6 @@ from pathlib import Path
 
 from app.schemas import Finding
 
-
 RISK_CALLS = {
     "requests.get",
     "requests.post",
