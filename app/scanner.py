@@ -1,9 +1,12 @@
 import ast
 import hashlib
+import logging
 import re
 from pathlib import Path
 
 from app.schemas import Finding
+
+logger = logging.getLogger(__name__)
 
 RISK_CALLS = {
     "requests.get",
@@ -272,6 +275,12 @@ def analyze_python_file(file_path, source):
         tree = ast.parse(source, filename=file_path)
     except (SyntaxError, ValueError) as exc:
         line = getattr(exc, "lineno", 1) or 1
+        logger.warning(
+            "Python source could not be parsed; returning a parse-error finding file=%s line=%d error_type=%s",
+            file_path,
+            line,
+            type(exc).__name__,
+        )
         return [
             Finding(
                 id=make_id(file_path, line, "parse_error"),
@@ -304,7 +313,12 @@ def analyze_repository(root: Path):
             if file.stat().st_size > 1_000_000:
                 continue
             source = file.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError) as exc:
+            logger.warning(
+                "Skipping unreadable source file during repository analysis file=%s error_type=%s",
+                file.relative_to(root).as_posix(),
+                type(exc).__name__,
+            )
             continue
         relative_path = file.relative_to(root).as_posix()
         if file.suffix.lower() == ".py":
@@ -312,3 +326,4 @@ def analyze_repository(root: Path):
         else:
             findings.extend(analyze_other_language_file(relative_path, source))
     return findings
+

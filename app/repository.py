@@ -1,3 +1,4 @@
+import logging
 import re
 import shutil
 from pathlib import Path
@@ -7,6 +8,8 @@ import httpx
 
 from app.config import settings
 from app.security import safe_extract_zip
+
+logger = logging.getLogger(__name__)
 
 
 class RepositoryError(ValueError):
@@ -60,6 +63,12 @@ async def from_github(repo_url: str, audit_id: str):
 
     workspace = create_workspace(audit_id)
     archive = workspace / "repo.zip"
+    logger.info(
+        "Starting GitHub repository archive download audit_id=%s repository=%s/%s",
+        audit_id,
+        owner,
+        repo,
+    )
     headers = {"Accept": "application/vnd.github+json", "User-Agent": "logging-auditor"}
     if settings.github_token:
         headers["Authorization"] = "Bearer " + settings.github_token
@@ -99,20 +108,55 @@ async def from_github(repo_url: str, audit_id: str):
         children = list(extracted.iterdir())
         root = children[0] if len(children) == 1 and children[0].is_dir() else extracted
         archive.unlink(missing_ok=True)
+        logger.info(
+            "GitHub repository archive downloaded and extracted audit_id=%s repository=%s/%s archive_bytes=%d",
+            audit_id,
+            owner,
+            repo,
+            total,
+        )
         return root, f"https://github.com/{owner}/{repo}"
-    except (RepositoryError, GitHubFetchError):
+    except (RepositoryError, GitHubFetchError) as exc:
+        logger.warning(
+            "GitHub repository fetch failed audit_id=%s repository=%s/%s error_type=%s",
+            audit_id,
+            owner,
+            repo,
+            type(exc).__name__,
+        )
         shutil.rmtree(workspace, ignore_errors=True)
         raise
     except httpx.TimeoutException as exc:
+        logger.warning(
+            "GitHub repository download timed out audit_id=%s repository=%s/%s",
+            audit_id,
+            owner,
+            repo,
+        )
         shutil.rmtree(workspace, ignore_errors=True)
         raise GitHubFetchError(
             "Timed out while downloading the GitHub repository. Try again or choose a smaller repository."
         ) from exc
     except httpx.RequestError as exc:
+        logger.warning(
+            "Could not connect to GitHub for repository download audit_id=%s repository=%s/%s error_type=%s",
+            audit_id,
+            owner,
+            repo,
+            type(exc).__name__,
+        )
         shutil.rmtree(workspace, ignore_errors=True)
         raise GitHubFetchError(
             "Could not connect to GitHub. Check the backend's internet connection and try again."
         ) from exc
-    except Exception:
+    except Exception as exc:
+        logger.exception(
+            "Unexpected GitHub repository download failure audit_id=%s repository=%s/%s error_type=%s",
+            audit_id,
+            owner,
+            repo,
+            type(exc).__name__,
+        )
         shutil.rmtree(workspace, ignore_errors=True)
         raise
+

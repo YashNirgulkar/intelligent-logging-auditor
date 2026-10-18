@@ -1,4 +1,5 @@
 
+import logging
 import tempfile
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -18,6 +19,9 @@ from app.service import (
     run_zip,
     summary,
 )
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -70,6 +74,7 @@ async def upload(file: UploadFile = File(...)):  # noqa: B008
 
     max_bytes = settings.max_upload_mb * 1024 * 1024
     temp_path = None
+    logger.info("Starting ZIP repository audit")
 
     try:
         with tempfile.NamedTemporaryFile(
@@ -91,6 +96,12 @@ async def upload(file: UploadFile = File(...)):  # noqa: B008
                 tmp.write(chunk)
 
         audit_id, source, findings = await run_zip(temp_path)
+        logger.info(
+            "ZIP repository audit completed audit_id=%s upload_bytes=%d finding_count=%d",
+            audit_id,
+            size,
+            len(findings),
+        )
 
         return AuditResponse(
             audit_id=audit_id,
@@ -99,16 +110,28 @@ async def upload(file: UploadFile = File(...)):  # noqa: B008
             summary=summary(findings),
         )
 
-    except HTTPException:
+    except HTTPException as exc:
+        logger.warning(
+            "ZIP repository audit request rejected status_code=%d",
+            exc.status_code,
+        )
         raise
 
     except (UnsafeArchiveError, RepositoryError, ValueError) as exc:
+        logger.warning(
+            "ZIP repository audit failed validation error_type=%s",
+            type(exc).__name__,
+        )
         raise HTTPException(
             status_code=400,
             detail=str(exc),
         ) from exc
 
     except Exception as exc:
+        logger.exception(
+            "ZIP repository audit failed",
+            extra={"error_type": type(exc).__name__},
+        )
         raise HTTPException(
             status_code=500,
             detail="Audit failed; inspect server logs.",
