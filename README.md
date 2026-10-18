@@ -21,16 +21,14 @@ uvicorn app.main:app --reload
 ```
 Docs: http://127.0.0.1:8000/docs
 
-Before starting locally, edit `.env` and set `AUDIT_USERNAME`, `AUDIT_PASSWORD`, and a random `AUDIT_TOKEN_SECRET` of at least 32 characters. The frontend opens at `/login`; access tokens expire after 12 hours by default. Never commit real credentials or secrets.
+This demo has no sign-in. Anyone who can reach the website can submit scans and use the audit API.
 
 ## Deploy to Render
-The root `render.yaml` defines a FastAPI service and a static frontend. To deploy, open Render's Blueprint creation page, connect this GitHub repository, and select the Blueprint. Render generates the token signing secret and asks you to enter an admin username and password as private service settings. The frontend is configured to use the API service URL and the API allows the configured frontend origin. Only `/health`, the sign-in endpoint, and API documentation are public; audit, repository, history, and marker routes require a valid sign-in.
+The root `render.yaml` defines a FastAPI service and a static frontend. To deploy, open Render's Blueprint creation page, connect this GitHub repository, and select the Blueprint. The frontend is configured to use the API service URL and the API allows the configured frontend origin. The whole demo and its audit endpoints are public with no sign-in.
 
 The free backend configuration stores audit workspaces under `/tmp`; those files can disappear when the service restarts or redeploys. Use a paid persistent disk and set `APP_DATA_DIR` to its mount path if audit history and source workspaces must survive restarts. Optional GitHub and LLM tokens can be set in the backend service environment; do not commit them.
 
 ## API
-- `POST /api/v1/auth/login` with `{"username":"...","password":"..."}` returns a 12-hour bearer token
-- `GET /api/v1/auth/me` returns the signed-in admin identity
 - `POST /api/v1/audits/upload` multipart ZIP upload
 - `POST /api/v1/audits/github` JSON `{"repo_url":"https://github.com/owner/repo"}`
 - `GET /api/v1/audits/{audit_id}`
@@ -40,5 +38,5 @@ The free backend configuration stores audit workspaces under `/tmp`; those files
 ## Important limitations
 The analyzer uses Python AST analysis and conservative source heuristics for JavaScript/TypeScript, Java, Go, C#, PHP, Ruby, and Rust; it is not a complete control-flow proof. It detects common risky calls in functions without recognized logger calls. Python exception handlers that neither log nor re-raise are also flagged. The approval endpoint adds a review marker comment; it does not blindly inject executable code. Review the proposed snippet and implement the actual fix manually or extend the patch engine with AST-aware edits. Never log secrets, tokens, credentials, personal data, or entire request payloads.
 
-This starter uses one admin account; it does not provide separate users or per-user audit isolation. Consider rate limiting, cleanup/retention, audit trails, and network egress controls before using it for sensitive production workloads. Repository code is never executed and no changes are pushed to GitHub. GitHub archives are read-only source imports.
+This public demo has shared access: anyone can submit scans and call the API. Do not upload private code or secrets. Consider authentication, rate limiting, cleanup/retention, audit trails, and network egress controls before using it for sensitive production workloads. Repository code is never executed and no changes are pushed to GitHub. GitHub archives are read-only source imports.
 
