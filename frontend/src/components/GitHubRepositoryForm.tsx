@@ -62,7 +62,7 @@ export const GitHubRepositoryForm: React.FC<Props> = ({ onScan, isLoading }) => 
           <div className="min-w-0">
             <h3 className="text-sm font-semibold text-[#20201f]">Public GitHub repository</h3>
             <p className="mt-1 text-xs leading-relaxed text-[#62625f]">
-              Paste a repository link. We’ll download its source archive and scan Python files without executing them.
+              Paste a repository link. We’ll download its source archive and scan supported language files without executing them.
             </p>
           </div>
         </div>

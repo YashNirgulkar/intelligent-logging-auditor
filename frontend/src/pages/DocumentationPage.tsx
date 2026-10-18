@@ -59,10 +59,10 @@ const ENDPOINTS: EndpointSpec[] = [
     path: '/api/v1/audits/upload',
     title: 'Upload Repository Archive',
     tag: 'Audits',
-    description: 'Upload a compressed .zip archive of a Python repository. The engine extracts the files into an isolated sandbox workspace and traverses all AST nodes for missing observability patterns.',
+    description: 'Upload a compressed .zip archive of a repository. The engine extracts supported source files into an isolated sandbox workspace and checks for risky operations without logging.',
     contentType: 'multipart/form-data',
     parameters: [
-      { name: 'file', type: 'binary (.zip)', required: true, description: 'Compressed ZIP file of the Python codebase (max 20MB).', in: 'formData' },
+      { name: 'file', type: 'binary (.zip)', required: true, description: 'Compressed ZIP file of the codebase (max 20MB). Supports Python, JavaScript/TypeScript, Java, Go, C#, PHP, Ruby, and Rust source files.', in: 'formData' },
     ],
     responseStatus: 200,
     responseExample: `{\n  "audit_id": "03a4fcbb50474af9",\n  "source": "uploaded_zip",\n  "findings": [\n    {\n      "id": "1bbf49491e09",\n      "file_path": "services/orders.py",\n      "line": 42,\n      "function_name": "dispatch_order",\n      "risk": "medium",\n      "rule": "risky_operation_without_logging",\n      "title": "Potential missing logging in dispatch_order",\n      "rationale": "Function performs outbound HTTP request without entry/error logging.",\n      "suggested_code": "logger.info('Dispatching order %s', order_id)",\n      "status": "suggested"\n    }\n  ],\n  "summary": {\n    "total": 1,\n    "high": 0,\n    "medium": 1,\n    "low": 0\n  }\n}`,
@@ -213,7 +213,7 @@ export const DocumentationPage: React.FC = () => {
             API Documentation & Architecture
           </h1>
           <p className="text-xs md:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-            Complete technical specification for the Intelligent Logging Auditor REST API, AST heuristics engine, and remediation pipeline.
+            Complete technical specification for the Intelligent Logging Auditor REST API, multi-language heuristics engine, and remediation pipeline.
           </p>
         </div>
 
@@ -235,10 +235,10 @@ export const DocumentationPage: React.FC = () => {
         <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
           <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400">
             <Cpu className="w-4 h-4" />
-            <span>AST Static Analysis</span>
+            <span>Multi-language Static Analysis</span>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed">
-            All codebases are parsed into Abstract Syntax Trees using Python’s native <code className="text-slate-200">ast.parse</code>. Code is <strong>never executed</strong>.
+            Python files use Python’s native <code className="text-slate-200">ast.parse</code>. JavaScript/TypeScript, Java, Go, C#, PHP, Ruby, and Rust use conservative source heuristics. Code is <strong>never executed</strong>.
           </p>
         </div>
 
@@ -248,7 +248,7 @@ export const DocumentationPage: React.FC = () => {
             <span>Review Markers Only</span>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed">
-            The apply endpoint injects non-destructive <code className="text-slate-200"># Logging auditor review</code> comment markers, preventing unintended runtime side-effects.
+            The apply endpoint inserts a non-executable review comment using the target language’s comment syntax, preventing unintended runtime side-effects.
           </p>
         </div>
 

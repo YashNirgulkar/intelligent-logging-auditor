@@ -110,7 +110,7 @@ export const RepositoryUpload: React.FC<Props> = ({ onScan, isLoading, uploadPro
                 color: '#62625f',
               }}
             >
-              <span>Supported format: .zip containing Python code</span>
+              <span>Supported format: .zip containing supported source files</span>
             </div>
           </div>
         ) : (

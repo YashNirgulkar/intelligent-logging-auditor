@@ -111,7 +111,7 @@ export const DashboardPage: React.FC = () => {
             }}
           >
             <Sparkles className="w-3 h-3" />
-            <span>Automated Observability · AST Static Analysis</span>
+            <span>Automated Observability · Multi-language Static Analysis</span>
           </div>
 
           <h1
@@ -123,7 +123,7 @@ export const DashboardPage: React.FC = () => {
           </h1>
 
           <p className="text-sm md:text-base leading-relaxed" style={{ color: '#4f4f4c' }}>
-            Find missing logs. Understand failures. Improve observability across Python codebases before issues hit production.
+            Find missing logs. Understand failures. Improve observability across Python, JavaScript/TypeScript, Java, Go, C#, PHP, Ruby, and Rust codebases.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">

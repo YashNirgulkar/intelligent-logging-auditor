@@ -1,6 +1,6 @@
 # Intelligent Logging Auditor
 
-Production-oriented starter for auditing Python repositories for potential missing logging. It analyzes code without executing it, produces findings and suggested snippets, and requires explicit approval before applying a review marker to the stored workspace.
+Production-oriented starter for auditing repositories for potential missing logging. It analyzes Python with the standard-library AST and uses source heuristics for JavaScript/TypeScript, Java, Go, C#, PHP, Ruby, and Rust. It does not execute repository code, produces findings and suggested snippets, and requires explicit approval before applying a review marker to the stored workspace.
 
 ## Setup
 Windows PowerShell:
@@ -29,6 +29,6 @@ Docs: http://127.0.0.1:8000/docs
 - `POST /api/v1/audits/{audit_id}/apply` JSON `{"finding_ids":["..."],"approved":true}`
 
 ## Important limitations
-The first version uses conservative AST heuristics, not a complete control-flow proof. It detects risky calls in functions without recognized logger calls and exception handlers that neither log nor re-raise. The approval endpoint adds a review marker comment; it does not blindly inject executable code. Review the proposed snippet and implement the actual fix manually or extend the patch engine with AST-aware edits. Never log secrets, tokens, credentials, personal data, or entire request payloads.
+The analyzer uses Python AST analysis and conservative source heuristics for JavaScript/TypeScript, Java, Go, C#, PHP, Ruby, and Rust; it is not a complete control-flow proof. It detects common risky calls in functions without recognized logger calls. Python exception handlers that neither log nor re-raise are also flagged. The approval endpoint adds a review marker comment; it does not blindly inject executable code. Review the proposed snippet and implement the actual fix manually or extend the patch engine with AST-aware edits. Never log secrets, tokens, credentials, personal data, or entire request payloads.
 
 Before public deployment add authentication, per-user isolation, rate limiting, cleanup/retention, HTTPS, audit trails, and network egress controls. Repository code is never executed and no changes are pushed to GitHub. GitHub archives are read-only source imports.

@@ -379,7 +379,7 @@ export const AuditResultsPage: React.FC = () => {
           title="No Findings Match Filters"
           description={
             audit.findings.length === 0
-              ? 'Great news! The static analyzer did not detect any missing logs or silent exception swallows in the inspected Python files.'
+              ? 'Great news! The static analyzer did not detect any missing logs or silent exception swallows in the inspected supported source files.'
               : 'No findings match your current search and filter criteria. Try adjusting the severity or search term.'
           }
           actionText={audit.findings.length > 0 ? 'Clear Filters' : undefined}

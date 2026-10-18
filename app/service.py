@@ -5,7 +5,7 @@ from pathlib import Path
 from app.config import settings
 from app.llm import enrich_findings
 from app.repository import from_github, from_zip
-from app.scanner import analyze_repository
+from app.scanner import LANGUAGE_RULES, analyze_repository
 from app.schemas import Finding
 
 
@@ -79,10 +79,15 @@ def apply_findings(audit_id: str, ids, approved: bool):
 
     applied = []
     changed = set()
+    marker_extensions = {".py", *LANGUAGE_RULES}
     for finding_id in requested:
         finding = known[finding_id]
         rel = Path(finding["file_path"])
-        if rel.is_absolute() or ".." in rel.parts or rel.suffix != ".py":
+        if (
+            rel.is_absolute()
+            or ".." in rel.parts
+            or rel.suffix.lower() not in marker_extensions
+        ):
             raise ValueError("Unsafe patch target.")
 
         target = (root / rel).resolve()
@@ -90,7 +95,8 @@ def apply_findings(audit_id: str, ids, approved: bool):
             raise ValueError("Invalid patch target.")
 
         original = target.read_text(encoding="utf-8")
-        marker = f"# Logging auditor review ({finding_id}): {finding['title']}"
+        comment = "#" if rel.suffix.lower() in {".py", ".rb"} else "//"
+        marker = f"{comment} Logging auditor review ({finding_id}): {finding['title']}"
         if marker not in original:
             lines = original.splitlines()
             lines.insert(max(0, min(len(lines), finding["line"] - 1)), marker)

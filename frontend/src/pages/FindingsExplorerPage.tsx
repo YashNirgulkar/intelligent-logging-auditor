@@ -89,7 +89,7 @@ export const FindingsExplorerPage: React.FC = () => {
           Findings & Heuristic Rules
         </h1>
         <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
-          The Intelligent Logging Auditor applies deterministic Abstract Syntax Tree (AST) pattern matching to flag missing logs and error masking in Python repositories.
+          The auditor uses Python AST analysis and source heuristics for JavaScript/TypeScript, Java, Go, C#, PHP, Ruby, and Rust to flag risky operations without logging.
         </p>
       </div>
 

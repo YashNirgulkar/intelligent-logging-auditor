@@ -26,7 +26,7 @@ export const AuditTable: React.FC<Props> = ({ audits, isLoading = false, onDelet
     return (
       <EmptyState
         title="No Audits Recorded"
-        description="Run your first static code audit by uploading a Python repository archive or specifying a GitHub repository URL."
+        description="Run your first static code audit by uploading a repository archive or specifying a GitHub repository URL."
         actionText="Start New Audit"
         onAction={() => (window.location.href = '/audits/new')}
       />

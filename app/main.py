@@ -36,7 +36,7 @@ app = FastAPI(
 async def home():
     return """
     <h1>Intelligent Logging Auditor</h1>
-    <p>Audit Python code for potential missing logging.</p>
+    <p>Audit Python, JavaScript/TypeScript, Java, Go, C#, PHP, Ruby, and Rust code for potential missing logging.</p>
     <p><a href="/docs">Open API docs</a></p>
     <p>Submitted code is analyzed, never executed.
     Review every heuristic finding.</p>

@@ -108,16 +108,16 @@ export const SettingsPage: React.FC = () => {
             <h3 className="text-sm font-semibold" style={{ color: '#20201f' }}>Execution Safety & Zero-Trust Policy</h3>
           </div>
           <p className="text-xs leading-relaxed" style={{ color: '#4f4f4c' }}>
-            The Intelligent Logging Auditor relies strictly on Python's native{' '}
-            <code style={{ color: '#454543', fontFamily: 'JetBrains Mono, monospace' }}>ast.NodeVisitor</code> module. Code uploaded or
-            downloaded from GitHub is parsed as syntax trees; it is{' '}
+            Python files are analyzed with Python's native{' '}
+            <code style={{ color: '#454543', fontFamily: 'JetBrains Mono, monospace' }}>ast.NodeVisitor</code>; JavaScript/TypeScript, Java, Go, C#, PHP, Ruby, and Rust use source heuristics. Code uploaded or
+            downloaded from GitHub is inspected statically; it is{' '}
             <strong style={{ color: '#20201f' }}>never imported, executed, or run</strong> within the environment. Review marker patches do
             not introduce executable arbitrary code.
           </p>
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
             {[
-              { icon: Zap, label: 'Static AST Parsing', desc: 'Code never executed', color: '#454543' },
+              { icon: Zap, label: 'Static source analysis', desc: 'Code never executed', color: '#454543' },
               { icon: ShieldCheck, label: 'Non-destructive', desc: 'Comment markers only', color: '#17845f' },
               { icon: Server, label: 'Isolated workspaces', desc: 'Per-audit sandboxing', color: '#646460' },
             ].map(({ icon: Icon, label, desc, color }) => (

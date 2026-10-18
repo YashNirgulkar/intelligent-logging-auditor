@@ -21,7 +21,7 @@ export const API_BASE_URL = shouldUseProxy ? '' : envBaseUrl.replace(/\/+$/, '')
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 120000, // 2 minutes for large repository AST scanning / LLM enrichment
+  timeout: 120000, // 2 minutes for large repository scanning / LLM enrichment
   headers: {
     'Accept': 'application/json',
   },
@@ -60,7 +60,7 @@ export function formatApiError(error: unknown): string {
     }
 
     if (axiosErr.code === 'ECONNABORTED') {
-      return 'Request timed out while analyzing repository AST. The codebase may be unusually large.';
+      return 'Request timed out while analyzing the repository. The codebase may be unusually large.';
     }
     if (axiosErr.message === 'Network Error') {
       return 'Unable to connect to backend at ' + (API_BASE_URL || 'http://127.0.0.1:8000') + '. Ensure the FastAPI server is running.';

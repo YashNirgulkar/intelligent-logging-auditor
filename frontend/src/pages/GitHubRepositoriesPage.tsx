@@ -48,7 +48,7 @@ export const GitHubRepositoriesPage: React.FC = () => {
           GitHub Repository Audits
         </h1>
         <p className="mt-1 max-w-2xl text-sm leading-relaxed text-[#62625f]">
-          Scan a public Python repository and review its observability findings. Source code is analyzed without being run.
+          Scan a public repository and review its observability findings across supported languages. Source code is analyzed without being run.
         </p>
       </div>
 

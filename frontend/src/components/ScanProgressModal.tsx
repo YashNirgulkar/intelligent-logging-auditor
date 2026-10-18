@@ -16,8 +16,8 @@ interface Step {
 }
 
 const STEPS: Step[] = [
-  { id: 1, title: 'Preparing repository', desc: 'Unpacking archive into isolated sandbox workspace and validating AST targets', icon: FileSearch },
-  { id: 2, title: 'Analyzing Python files', desc: 'Traversing Abstract Syntax Trees (AST) for function calls and exception blocks', icon: Cpu },
+  { id: 1, title: 'Preparing repository', desc: 'Unpacking archive into isolated sandbox workspace and selecting supported source files', icon: FileSearch },
+  { id: 2, title: 'Analyzing source files', desc: 'Using Python AST analysis and language-specific source heuristics', icon: Cpu },
   { id: 3, title: 'Detecting logging gaps', desc: 'Applying heuristic rules for risky operations and silent exception swallowing', icon: ShieldAlert },
   { id: 4, title: 'Preparing findings & suggestions', desc: 'Synthesizing contextual rationales and safe logging recommendations', icon: Sparkles },
 ];

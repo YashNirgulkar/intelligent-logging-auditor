@@ -71,7 +71,7 @@ export const NewAuditPage: React.FC = () => {
           }}
         >
           <Sparkles className="w-3.5 h-3.5" />
-          <span>New AST Analysis Session</span>
+          <span>New Static Analysis Session</span>
         </div>
         <h1
           className="text-2xl font-bold tracking-tight"
@@ -80,7 +80,7 @@ export const NewAuditPage: React.FC = () => {
           Start New Audit
         </h1>
         <p className="text-sm leading-relaxed" style={{ color: '#4f4f4c' }}>
-          Provide a Python project via a local ZIP archive or a public GitHub repository. The engine parses AST trees to identify unlogged risky calls, uncaught failures, and silent exception swallows.
+          Provide a project via a local ZIP archive or a public GitHub repository. The engine identifies risky calls without logging across Python, JavaScript/TypeScript, Java, Go, C#, PHP, Ruby, and Rust. Python uses AST analysis; other languages use source heuristics.
         </p>
       </div>
 
@@ -97,7 +97,7 @@ export const NewAuditPage: React.FC = () => {
         <div className="space-y-1">
           <p className="font-semibold" style={{ color: '#20201f' }}>Non-Executing Static Heuristics</p>
           <p className="leading-relaxed" style={{ color: '#4f4f4c' }}>
-            Submitted code is strictly analyzed via static AST parsing and heuristic patterns. Code is{' '}
+            Submitted code is strictly analyzed via Python AST and language-specific heuristic patterns. Code is{' '}
             <strong style={{ color: '#20201f' }}>never executed</strong>. Heuristic suggestions should be carefully reviewed before applying.
           </p>
         </div>
