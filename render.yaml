@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: intelligent-logging-auditor-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: APP_DATA_DIR
+        value: /tmp/ila-data
+      - key: MAX_UPLOAD_MB
+        value: "20"
+      - key: CORS_ORIGINS
+        value: https://intelligent-logging-auditor-ui.onrender.com
+
+  - type: web
+    runtime: static
+    name: intelligent-logging-auditor-ui
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: intelligent-logging-auditor-api
+          envVarKey: RENDER_EXTERNAL_URL
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -21,6 +21,11 @@ uvicorn app.main:app --reload
 ```
 Docs: http://127.0.0.1:8000/docs
 
+## Deploy to Render
+The root `render.yaml` defines a public FastAPI service and a static frontend. To deploy, open Render's Blueprint creation page, connect this GitHub repository, and select the Blueprint. The frontend is configured to use the API service URL and the API allows the configured frontend origin.
+
+The free backend configuration stores audit workspaces under `/tmp`; those files can disappear when the service restarts or redeploys. Use a paid persistent disk and set `APP_DATA_DIR` to its mount path if audit history and source workspaces must survive restarts. Optional GitHub and LLM tokens can be set in the backend service environment; do not commit them.
+
 ## API
 - `POST /api/v1/audits/upload` multipart ZIP upload
 - `POST /api/v1/audits/github` JSON `{"repo_url":"https://github.com/owner/repo"}`
