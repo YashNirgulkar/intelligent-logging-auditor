@@ -26,6 +26,7 @@ import { AuditTable } from '../components/AuditTable';
 import { getStoredAudits, removeAuditFromHistory } from '../lib/auditStorage';
 import { StoredAuditMeta } from '../types/api';
 import { useBackendStatus } from '../context/BackendStatusContext';
+import { API_ORIGIN } from '../api/client';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -170,7 +171,7 @@ export const DashboardPage: React.FC = () => {
                 className="px-1.5 py-0.5 rounded"
                 style={{ background: 'rgba(197, 22, 50, 0.15)', fontFamily: 'JetBrains Mono, monospace' }}
               >
-                http://127.0.0.1:8000/health
+                {API_ORIGIN}/health
               </code>
               . Ensure the FastAPI server is running with{' '}
               <code
@@ -352,3 +353,4 @@ export const DashboardPage: React.FC = () => {
     </div>
   );
 };
+

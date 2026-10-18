@@ -17,7 +17,7 @@ import {
   Cpu,
   RefreshCw,
 } from 'lucide-react';
-import { apiClient } from '../api/client';
+import { apiClient, API_ORIGIN } from '../api/client';
 import { cn } from '../lib/utils';
 import { toast } from 'sonner';
 
@@ -49,9 +49,9 @@ const ENDPOINTS: EndpointSpec[] = [
     description: 'Verify system liveness, FastAPI runtime readiness, and storage mount accessibility.',
     responseStatus: 200,
     responseExample: `{\n  "status": "ok"\n}`,
-    curlSnippet: `curl -X GET http://127.0.0.1:8000/health`,
-    pythonSnippet: `import httpx\n\nresponse = httpx.get("http://127.0.0.1:8000/health")\nprint(response.json()) # {"status": "ok"}`,
-    jsSnippet: `const res = await fetch('http://127.0.0.1:8000/health');\nconst data = await res.json();\nconsole.log(data);`,
+    curlSnippet: `curl -X GET ${API_ORIGIN}/health`,
+    pythonSnippet: `import httpx\n\nresponse = httpx.get("${API_ORIGIN}/health")\nprint(response.json()) # {"status": "ok"}`,
+    jsSnippet: `const res = await fetch('${API_ORIGIN}/health');\nconst data = await res.json();\nconsole.log(data);`,
   },
   {
     id: 'upload-zip',
@@ -66,9 +66,9 @@ const ENDPOINTS: EndpointSpec[] = [
     ],
     responseStatus: 200,
     responseExample: `{\n  "audit_id": "03a4fcbb50474af9",\n  "source": "uploaded_zip",\n  "findings": [\n    {\n      "id": "1bbf49491e09",\n      "file_path": "services/orders.py",\n      "line": 42,\n      "function_name": "dispatch_order",\n      "risk": "medium",\n      "rule": "risky_operation_without_logging",\n      "title": "Potential missing logging in dispatch_order",\n      "rationale": "Function performs outbound HTTP request without entry/error logging.",\n      "suggested_code": "logger.info('Dispatching order %s', order_id)",\n      "status": "suggested"\n    }\n  ],\n  "summary": {\n    "total": 1,\n    "high": 0,\n    "medium": 1,\n    "low": 0\n  }\n}`,
-    curlSnippet: `curl -X POST http://127.0.0.1:8000/api/v1/audits/upload \\\n  -F "file=@repository.zip"`,
-    pythonSnippet: `import httpx\n\nwith open("repository.zip", "rb") as f:\n    files = {"file": ("repository.zip", f, "application/zip")}\n    res = httpx.post("http://127.0.0.1:8000/api/v1/audits/upload", files=files)\nprint(res.json())`,
-    jsSnippet: `const formData = new FormData();\nformData.append('file', fileInput.files[0]);\n\nconst res = await fetch('http://127.0.0.1:8000/api/v1/audits/upload', {\n  method: 'POST',\n  body: formData\n});\nconst data = await res.json();`,
+    curlSnippet: `curl -X POST ${API_ORIGIN}/api/v1/audits/upload \\\n  -F "file=@repository.zip"`,
+    pythonSnippet: `import httpx\n\nwith open("repository.zip", "rb") as f:\n    files = {"file": ("repository.zip", f, "application/zip")}\n    res = httpx.post("${API_ORIGIN}/api/v1/audits/upload", files=files)\nprint(res.json())`,
+    jsSnippet: `const formData = new FormData();\nformData.append('file', fileInput.files[0]);\n\nconst res = await fetch('${API_ORIGIN}/api/v1/audits/upload', {\n  method: 'POST',\n  body: formData\n});\nconst data = await res.json();`,
   },
   {
     id: 'github-audit',
@@ -84,9 +84,9 @@ const ENDPOINTS: EndpointSpec[] = [
     requestBodyExample: `{\n  "repo_url": "https://github.com/pallets/flask"\n}`,
     responseStatus: 200,
     responseExample: `{\n  "audit_id": "84c8a41df2a1",\n  "source": "https://github.com/pallets/flask",\n  "findings": [...],\n  "summary": {\n    "total": 12,\n    "high": 3,\n    "medium": 7,\n    "low": 2\n  }\n}`,
-    curlSnippet: `curl -X POST http://127.0.0.1:8000/api/v1/audits/github \\\n  -H "Content-Type: application/json" \\\n  -d '{"repo_url": "https://github.com/pallets/flask"}'`,
-    pythonSnippet: `import httpx\n\npayload = {"repo_url": "https://github.com/pallets/flask"}\nres = httpx.post("http://127.0.0.1:8000/api/v1/audits/github", json=payload)\nprint(res.json())`,
-    jsSnippet: `const res = await fetch('http://127.0.0.1:8000/api/v1/audits/github', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({ repo_url: 'https://github.com/pallets/flask' })\n});\nconst data = await res.json();`,
+    curlSnippet: `curl -X POST ${API_ORIGIN}/api/v1/audits/github \\\n  -H "Content-Type: application/json" \\\n  -d '{"repo_url": "https://github.com/pallets/flask"}'`,
+    pythonSnippet: `import httpx\n\npayload = {"repo_url": "https://github.com/pallets/flask"}\nres = httpx.post("${API_ORIGIN}/api/v1/audits/github", json=payload)\nprint(res.json())`,
+    jsSnippet: `const res = await fetch('${API_ORIGIN}/api/v1/audits/github', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({ repo_url: 'https://github.com/pallets/flask' })\n});\nconst data = await res.json();`,
   },
   {
     id: 'get-audit',
@@ -100,9 +100,9 @@ const ENDPOINTS: EndpointSpec[] = [
     ],
     responseStatus: 200,
     responseExample: `{\n  "audit_id": "03a4fcbb50474af9",\n  "source": "uploaded_zip",\n  "findings": [\n    {\n      "id": "994c0af9f570",\n      "file_path": "sample.py",\n      "line": 10,\n      "function_name": "process_order",\n      "risk": "high",\n      "rule": "exception_without_log_or_reraise",\n      "title": "Exception handler in process_order may hide a failure",\n      "rationale": "Handler swallows exceptions without logging or re-raising.",\n      "suggested_code": "logger.exception('Operation failed')\\\\nraise",\n      "status": "suggested"\n    }\n  ],\n  "summary": { "total": 1, "high": 1, "medium": 0, "low": 0 }\n}`,
-    curlSnippet: `curl -X GET http://127.0.0.1:8000/api/v1/audits/03a4fcbb50474af9`,
-    pythonSnippet: `import httpx\n\nres = httpx.get("http://127.0.0.1:8000/api/v1/audits/03a4fcbb50474af9")\nprint(res.json())`,
-    jsSnippet: `const res = await fetch('http://127.0.0.1:8000/api/v1/audits/03a4fcbb50474af9');\nconst data = await res.json();`,
+    curlSnippet: `curl -X GET ${API_ORIGIN}/api/v1/audits/03a4fcbb50474af9`,
+    pythonSnippet: `import httpx\n\nres = httpx.get("${API_ORIGIN}/api/v1/audits/03a4fcbb50474af9")\nprint(res.json())`,
+    jsSnippet: `const res = await fetch('${API_ORIGIN}/api/v1/audits/03a4fcbb50474af9');\nconst data = await res.json();`,
   },
   {
     id: 'get-patches',
@@ -116,9 +116,9 @@ const ENDPOINTS: EndpointSpec[] = [
     ],
     responseStatus: 200,
     responseExample: `{\n  "audit_id": "03a4fcbb50474af9",\n  "approval_required": true,\n  "patches": [\n    {\n      "finding_id": "994c0af9f570",\n      "file_path": "sample.py",\n      "line": 10,\n      "title": "Exception handler in process_order may hide a failure",\n      "suggested_code": "logger.exception('Operation failed')",\n      "status": "suggested"\n    }\n  ]\n}`,
-    curlSnippet: `curl -X GET http://127.0.0.1:8000/api/v1/audits/03a4fcbb50474af9/patches`,
-    pythonSnippet: `import httpx\n\nres = httpx.get("http://127.0.0.1:8000/api/v1/audits/03a4fcbb50474af9/patches")\nprint(res.json())`,
-    jsSnippet: `const res = await fetch('http://127.0.0.1:8000/api/v1/audits/03a4fcbb50474af9/patches');\nconst data = await res.json();`,
+    curlSnippet: `curl -X GET ${API_ORIGIN}/api/v1/audits/03a4fcbb50474af9/patches`,
+    pythonSnippet: `import httpx\n\nres = httpx.get("${API_ORIGIN}/api/v1/audits/03a4fcbb50474af9/patches")\nprint(res.json())`,
+    jsSnippet: `const res = await fetch('${API_ORIGIN}/api/v1/audits/03a4fcbb50474af9/patches');\nconst data = await res.json();`,
   },
   {
     id: 'apply-patches',
@@ -136,9 +136,9 @@ const ENDPOINTS: EndpointSpec[] = [
     requestBodyExample: `{\n  "finding_ids": ["994c0af9f570"],\n  "approved": true\n}`,
     responseStatus: 200,
     responseExample: `{\n  "audit_id": "03a4fcbb50474af9",\n  "applied_finding_ids": ["994c0af9f570"],\n  "changed_files": ["sample.py"],\n  "message": "Review markers applied to workspace. Inspect diff and run tests before merging."\n}`,
-    curlSnippet: `curl -X POST http://127.0.0.1:8000/api/v1/audits/03a4fcbb50474af9/apply \\\n  -H "Content-Type: application/json" \\\n  -d '{"finding_ids": ["994c0af9f570"], "approved": true}'`,
-    pythonSnippet: `import httpx\n\npayload = {"finding_ids": ["994c0af9f570"], "approved": True}\nres = httpx.post("http://127.0.0.1:8000/api/v1/audits/03a4fcbb50474af9/apply", json=payload)\nprint(res.json())`,
-    jsSnippet: `const res = await fetch('http://127.0.0.1:8000/api/v1/audits/03a4fcbb50474af9/apply', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({ finding_ids: ['994c0af9f570'], approved: true })\n});\nconst data = await res.json();`,
+    curlSnippet: `curl -X POST ${API_ORIGIN}/api/v1/audits/03a4fcbb50474af9/apply \\\n  -H "Content-Type: application/json" \\\n  -d '{"finding_ids": ["994c0af9f570"], "approved": true}'`,
+    pythonSnippet: `import httpx\n\npayload = {"finding_ids": ["994c0af9f570"], "approved": True}\nres = httpx.post("${API_ORIGIN}/api/v1/audits/03a4fcbb50474af9/apply", json=payload)\nprint(res.json())`,
+    jsSnippet: `const res = await fetch('${API_ORIGIN}/api/v1/audits/03a4fcbb50474af9/apply', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({ finding_ids: ['994c0af9f570'], approved: true })\n});\nconst data = await res.json();`,
   },
 ];
 
@@ -219,7 +219,7 @@ export const DocumentationPage: React.FC = () => {
 
         <div className="flex items-center gap-3">
           <a
-            href="http://127.0.0.1:8000/openapi.json"
+            href={`${API_ORIGIN}/openapi.json`}
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-slate-900 border border-slate-800 transition-colors"
@@ -523,3 +523,4 @@ export const DocumentationPage: React.FC = () => {
     </div>
   );
 };
+

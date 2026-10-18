@@ -14,6 +14,7 @@ import {
 import { GithubIcon } from './GithubIcon';
 import { cn } from '../lib/utils';
 import { BackendStatusIndicator } from './BackendStatusIndicator';
+import { API_ORIGIN } from '../api/client';
 
 interface Props {
   isOpen?: boolean;
@@ -142,7 +143,7 @@ export const AppSidebar: React.FC<Props> = ({ isOpen = false, onClose }) => {
             Resources
           </div>
           <a
-            href="http://127.0.0.1:8000/docs"
+            href={`${API_ORIGIN}/docs`}
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all group border border-transparent"
@@ -190,3 +191,4 @@ export const AppSidebar: React.FC<Props> = ({ isOpen = false, onClose }) => {
     </>
   );
 };
+

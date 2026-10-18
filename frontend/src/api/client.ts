@@ -18,6 +18,9 @@ const isRunningInBrowser = typeof window !== 'undefined';
 const shouldUseProxy = isRunningInBrowser && isLocalBackend && window.location.port !== '8000';
 
 export const API_BASE_URL = shouldUseProxy ? '' : envBaseUrl.replace(/\/+$/, '');
+export const API_ORIGIN = API_BASE_URL || (isRunningInBrowser
+  ? `${window.location.protocol}//${window.location.hostname}:8000`
+  : 'http://127.0.0.1:8000');
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

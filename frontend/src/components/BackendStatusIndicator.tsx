@@ -2,6 +2,7 @@ import React from 'react';
 import { useBackendStatus } from '../context/BackendStatusContext';
 import { RefreshCw } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { API_ORIGIN } from '../api/client';
 
 interface Props {
   minimal?: boolean;
@@ -27,7 +28,7 @@ export const BackendStatusIndicator: React.FC<Props> = ({ minimal = false, class
       border: 'rgba(23, 132, 95, 0.2)',
       textColor: '#17845f',
       label: 'API Online',
-      detail: 'FastAPI 127.0.0.1:8000',
+      detail: `FastAPI ${new URL(API_ORIGIN).host}`,
     },
     checking: {
       dotColor: '#a5680b',
@@ -58,7 +59,7 @@ export const BackendStatusIndicator: React.FC<Props> = ({ minimal = false, class
             ? `Backend online${latencyMs !== null ? ` (${latencyMs}ms)` : ''}`
             : status === 'checking'
             ? 'Checking backend connection...'
-            : 'Backend offline (http://127.0.0.1:8000)'
+            : `Backend offline (${API_ORIGIN})`
         }
       >
         <span
@@ -114,3 +115,4 @@ export const BackendStatusIndicator: React.FC<Props> = ({ minimal = false, class
     </div>
   );
 };
+
