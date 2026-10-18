@@ -3,13 +3,14 @@ import tempfile
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
 from app.config import settings
+from app.auth import authenticate, require_auth
 from app.repository import GitHubFetchError, RepositoryError
-from app.schemas import ApplyRequest, AuditResponse, Finding, GitHubAuditRequest
+from app.schemas import ApplyRequest, AuditResponse, AuthUser, Finding, GitHubAuditRequest, LoginRequest, LoginResponse
 from app.security import UnsafeArchiveError
 from app.service import (
     apply_findings,
@@ -57,11 +58,28 @@ async def health():
     return {"status": "ok"}
 
 
+@app.post("/api/v1/auth/login", response_model=LoginResponse)
+async def login(request: LoginRequest):
+    token = authenticate(request.username, request.password)
+    return LoginResponse(
+        access_token=token,
+        expires_in=settings.audit_token_ttl_seconds,
+    )
+
+
+@app.get("/api/v1/auth/me", response_model=AuthUser)
+async def current_user(username: str = Depends(require_auth)):
+    return AuthUser(username=username)
+
+
 @app.post(
     "/api/v1/audits/upload",
     response_model=AuditResponse,
 )
-async def upload(file: UploadFile = File(...)):  # noqa: B008
+async def upload(
+    file: UploadFile = File(...),
+    _user: str = Depends(require_auth),
+):  # noqa: B008
     if not file.filename or not file.filename.lower().endswith(".zip"):
         raise HTTPException(
             status_code=400,
@@ -125,7 +143,10 @@ async def upload(file: UploadFile = File(...)):  # noqa: B008
     "/api/v1/audits/github",
     response_model=AuditResponse,
 )
-async def github(request: GitHubAuditRequest):
+async def github(
+    request: GitHubAuditRequest,
+    _user: str = Depends(require_auth),
+):
     try:
         audit_id, source, findings = await run_github(
             str(request.repo_url)
@@ -161,7 +182,7 @@ async def github(request: GitHubAuditRequest):
     "/api/v1/audits/{audit_id}",
     response_model=AuditResponse,
 )
-async def get_audit(audit_id: str):
+async def get_audit(audit_id: str, _user: str = Depends(require_auth)):
     try:
         data = load_manifest(audit_id)
 
@@ -185,7 +206,7 @@ async def get_audit(audit_id: str):
 
 
 @app.get("/api/v1/audits/{audit_id}/patches")
-async def patches(audit_id: str):
+async def patches(audit_id: str, _user: str = Depends(require_auth)):
     try:
         data = load_manifest(audit_id)
 
@@ -213,7 +234,11 @@ async def patches(audit_id: str):
 
 
 @app.post("/api/v1/audits/{audit_id}/apply")
-async def apply(audit_id: str, request: ApplyRequest):
+async def apply(
+    audit_id: str,
+    request: ApplyRequest,
+    _user: str = Depends(require_auth),
+):
     try:
         applied, changed = apply_findings(
             audit_id,
@@ -248,3 +273,4 @@ async def apply(audit_id: str, request: ApplyRequest):
             status_code=400,
             detail=str(exc),
         ) from exc
+

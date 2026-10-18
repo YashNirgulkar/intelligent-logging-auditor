@@ -63,6 +63,16 @@ export interface HealthResponse {
   status: string;
 }
 
+export interface LoginResponse {
+  access_token: string;
+  token_type: 'bearer';
+  expires_in: number;
+}
+
+export interface AuthUser {
+  username: string;
+}
+
 export interface StoredAuditMeta {
   audit_id: string;
   source: string;
@@ -73,3 +83,4 @@ export interface StoredAuditMeta {
   lowCount: number;
   status: 'completed' | 'markers_applied';
 }
+

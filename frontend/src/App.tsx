@@ -13,8 +13,10 @@ import { FindingsExplorerPage } from './pages/FindingsExplorerPage';
 import { GitHubRepositoriesPage } from './pages/GitHubRepositoriesPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { DocumentationPage } from './pages/DocumentationPage';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { LoginPage } from './pages/LoginPage';
 
-const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const AppLayout: React.FC<{ children: React.ReactNode; onLogout: () => void }> = ({ children, onLogout }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -23,7 +25,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
       {/* Main content shifted right on desktop */}
       <div className="flex-1 flex flex-col lg:pl-64 transition-all duration-200">
-        <TopNavbar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
+        <TopNavbar onToggleSidebar={() => setSidebarOpen((prev) => !prev)} onLogout={onLogout} />
         <main className="flex-1 p-4 md:p-8 overflow-y-auto">
           {children}
         </main>
@@ -46,29 +48,46 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
+const AuthenticatedApp: React.FC = () => {
+  const { state, logout } = useAuth();
+  if (state === 'checking') {
+    return <div className="min-h-screen flex items-center justify-center text-sm" style={{ background: 'var(--bg)', color: 'var(--text-secondary)' }}>Checking your session…</div>;
+  }
+  if (state === 'signed-out') {
+    return <Routes><Route path="/login" element={<LoginPage />} /><Route path="*" element={<Navigate to="/login" replace />} /></Routes>;
+  }
+  return (
+    <AppLayout onLogout={logout}>
+      <Routes>
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/audits/new" element={<NewAuditPage />} />
+        <Route path="/audits/:auditId" element={<AuditResultsPage />} />
+        <Route path="/history" element={<AuditHistoryPage />} />
+        <Route path="/findings" element={<FindingsExplorerPage />} />
+        <Route path="/repositories" element={<GitHubRepositoriesPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/docs" element={<DocumentationPage />} />
+        <Route path="/documentation" element={<Navigate to="/docs" replace />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AppLayout>
+  );
+};
+
 export function App() {
   return (
     <ThemeProvider>
       <BackendStatusProvider>
-        <BrowserRouter>
-          <AppLayout>
-            <Routes>
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/audits/new" element={<NewAuditPage />} />
-              <Route path="/audits/:auditId" element={<AuditResultsPage />} />
-              <Route path="/history" element={<AuditHistoryPage />} />
-              <Route path="/findings" element={<FindingsExplorerPage />} />
-              <Route path="/repositories" element={<GitHubRepositoriesPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/docs" element={<DocumentationPage />} />
-              <Route path="/documentation" element={<Navigate to="/docs" replace />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </AppLayout>
-        </BrowserRouter>
+        <AuthProvider>
+          <BrowserRouter>
+            <AuthenticatedApp />
+          </BrowserRouter>
+        </AuthProvider>
       </BackendStatusProvider>
     </ThemeProvider>
   );
 }
 
 export default App;
+

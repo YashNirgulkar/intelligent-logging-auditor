@@ -6,6 +6,7 @@ import {
   RefreshCw,
   Terminal,
   Bell,
+  LogOut,
 } from 'lucide-react';
 import { BackendStatusIndicator } from './BackendStatusIndicator';
 
@@ -13,12 +14,14 @@ interface Props {
   onToggleSidebar: () => void;
   onRefresh?: () => void;
   isRefreshing?: boolean;
+  onLogout?: () => void;
 }
 
 export const TopNavbar: React.FC<Props> = ({
   onToggleSidebar,
   onRefresh,
   isRefreshing = false,
+  onLogout,
 }) => {
   const location = useLocation();
   const pathParts = location.pathname.split('/').filter(Boolean);
@@ -133,6 +136,16 @@ export const TopNavbar: React.FC<Props> = ({
           <BackendStatusIndicator minimal />
         </div>
 
+        <button
+          onClick={onLogout}
+          className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors"
+          style={{ color: '#4f4f4c', background: 'rgba(255, 255, 255, 0.8)', border: '1px solid #e2e2df' }}
+          title="Sign out"
+        >
+          <LogOut className="h-4 w-4" />
+          <span className="hidden md:inline">Sign out</span>
+        </button>
+
         {/* Notification bell */}
         <button
           className="p-2 rounded-xl transition-colors cursor-pointer relative"
@@ -167,3 +180,4 @@ export const TopNavbar: React.FC<Props> = ({
     </header>
   );
 };
+

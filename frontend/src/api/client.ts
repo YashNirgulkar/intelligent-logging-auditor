@@ -6,6 +6,8 @@ import {
   ApplyResponse,
   GitHubAuditRequest,
   HealthResponse,
+  LoginResponse,
+  AuthUser,
 } from '../types/api';
 
 // Configurable API Base URL
@@ -26,6 +28,29 @@ export const apiClient = axios.create({
     'Accept': 'application/json',
   },
 });
+
+apiClient.interceptors.request.use((config) => {
+  const token = typeof sessionStorage !== 'undefined'
+    ? sessionStorage.getItem('ila_access_token')
+    : null;
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (
+      error.response?.status === 401
+      && !error.config?.url?.endsWith('/api/v1/auth/login')
+      && typeof window !== 'undefined'
+    ) {
+      sessionStorage.removeItem('ila_access_token');
+      window.dispatchEvent(new Event('ila:auth-expired'));
+    }
+    return Promise.reject(error);
+  },
+);
 
 // Response error handler to extract structured FastAPI error details
 export function formatApiError(error: unknown): string {
@@ -77,6 +102,16 @@ export function formatApiError(error: unknown): string {
 }
 
 export const auditsApi = {
+  async login(username: string, password: string): Promise<LoginResponse> {
+    const response = await apiClient.post<LoginResponse>('/api/v1/auth/login', { username, password });
+    return response.data;
+  },
+
+  async currentUser(): Promise<AuthUser> {
+    const response = await apiClient.get<AuthUser>('/api/v1/auth/me');
+    return response.data;
+  },
+
   // Check backend connection health
   async checkHealth(): Promise<HealthResponse> {
     try {
@@ -144,3 +179,4 @@ export const auditsApi = {
     return response.data;
   },
 };
+
