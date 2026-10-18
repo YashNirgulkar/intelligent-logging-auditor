@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   History,
@@ -18,15 +18,9 @@ import { toast } from 'sonner';
 
 export const AuditHistoryPage: React.FC = () => {
   const navigate = useNavigate();
-  const [audits, setAudits] = useState<StoredAuditMeta[]>([]);
+  const [audits, setAudits] = useState<StoredAuditMeta[]>(getStoredAudits);
   const [searchQuery, setSearchQuery] = useState('');
   const [lookupId, setLookupId] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setAudits(getStoredAudits());
-    setIsLoading(false);
-  }, []);
 
   const handleDelete = (id: string) => {
     removeAuditFromHistory(id);
@@ -174,7 +168,7 @@ export const AuditHistoryPage: React.FC = () => {
         </div>
       )}
 
-      <AuditTable audits={filteredAudits} isLoading={isLoading} onDelete={handleDelete} />
+      <AuditTable audits={filteredAudits} onDelete={handleDelete} />
     </div>
   );
 };

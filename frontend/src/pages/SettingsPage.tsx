@@ -7,7 +7,7 @@ import {
   Trash2,
   Zap,
 } from 'lucide-react';
-import { useBackendStatus } from '../context/BackendStatusContext';
+import { useBackendStatus } from '../context/useBackendStatus';
 import { clearAuditHistory, getStoredAudits } from '../lib/auditStorage';
 import { API_BASE_URL } from '../api/client';
 import { toast } from 'sonner';

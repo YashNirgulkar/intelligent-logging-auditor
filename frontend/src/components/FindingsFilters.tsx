@@ -1,6 +1,5 @@
 import React from 'react';
 import { Search, Filter, X } from 'lucide-react';
-import { cn } from '../lib/utils';
 
 interface Props {
   searchQuery: string;

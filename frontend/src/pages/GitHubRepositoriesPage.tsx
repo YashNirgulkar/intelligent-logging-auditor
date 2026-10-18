@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FolderGit2, ExternalLink, GitBranch } from 'lucide-react';
 import { GithubIcon } from '../components/GithubIcon';
@@ -14,12 +14,9 @@ export const GitHubRepositoriesPage: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [scanTargetName, setScanTargetName] = useState<string | undefined>(undefined);
-  const [githubAudits, setGithubAudits] = useState<StoredAuditMeta[]>([]);
-
-  useEffect(() => {
-    const stored = getStoredAudits();
-    setGithubAudits(stored.filter((a) => a.source.startsWith('http')));
-  }, []);
+  const [githubAudits] = useState<StoredAuditMeta[]>(() =>
+    getStoredAudits().filter((audit) => audit.source.startsWith('http')),
+  );
 
   const handleScan = async (url: string) => {
     setIsLoading(true);

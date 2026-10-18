@@ -1,5 +1,5 @@
 import React from 'react';
-import { useBackendStatus } from '../context/BackendStatusContext';
+import { useBackendStatus } from '../context/useBackendStatus';
 import { RefreshCw } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { API_ORIGIN } from '../api/client';
@@ -115,4 +115,3 @@ export const BackendStatusIndicator: React.FC<Props> = ({ minimal = false, class
     </div>
   );
 };
-

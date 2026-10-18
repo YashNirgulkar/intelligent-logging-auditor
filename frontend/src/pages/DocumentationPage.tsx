@@ -2,15 +2,10 @@ import React, { useState } from 'react';
 import {
   BookOpen,
   Terminal,
-  Code2,
-  Send,
   Copy,
   Check,
   Play,
-  Layers,
-  FileText,
   ShieldCheck,
-  AlertTriangle,
   ExternalLink,
   ChevronRight,
   Database,
@@ -523,4 +518,3 @@ export const DocumentationPage: React.FC = () => {
     </div>
   );
 };
-

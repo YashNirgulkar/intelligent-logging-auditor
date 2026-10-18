@@ -1,16 +1,6 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { auditsApi } from '../api/client';
-
-export type BackendConnectionStatus = 'connected' | 'disconnected' | 'checking';
-
-interface BackendStatusContextType {
-  status: BackendConnectionStatus;
-  lastChecked: Date | null;
-  latencyMs: number | null;
-  checkNow: () => Promise<void>;
-}
-
-const BackendStatusContext = createContext<BackendStatusContextType | undefined>(undefined);
+import { BackendStatusContext, type BackendConnectionStatus } from './BackendStatusContextValue';
 
 export const BackendStatusProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [status, setStatus] = useState<BackendConnectionStatus>('checking');
@@ -38,9 +28,12 @@ export const BackendStatusProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   useEffect(() => {
-    checkConnection();
-    const interval = setInterval(checkConnection, 20000); // Check every 20s
-    return () => clearInterval(interval);
+    const initialCheck = window.setTimeout(() => void checkConnection(), 0);
+    const interval = window.setInterval(checkConnection, 20000);
+    return () => {
+      window.clearTimeout(initialCheck);
+      window.clearInterval(interval);
+    };
   }, [checkConnection]);
 
   return (
@@ -49,11 +42,3 @@ export const BackendStatusProvider: React.FC<{ children: React.ReactNode }> = ({
     </BackendStatusContext.Provider>
   );
 };
-
-export function useBackendStatus(): BackendStatusContextType {
-  const context = useContext(BackendStatusContext);
-  if (!context) {
-    throw new Error('useBackendStatus must be used within a BackendStatusProvider');
-  }
-  return context;
-}

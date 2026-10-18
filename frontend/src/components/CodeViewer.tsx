@@ -112,7 +112,7 @@ function highlightPython(line: string): React.ReactNode {
     return <span style={{ color: '#70706d', fontStyle: 'italic' }}>{line}</span>;
   }
 
-  const parts = line.split(/(\".*?\"|'.*?'|#.*$)/g);
+  const parts = line.split(/(".*?"|'.*?'|#.*$)/g);
 
   return parts.map((part, i) => {
     if (part.startsWith('#')) {

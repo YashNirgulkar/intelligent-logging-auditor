@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UploadCloud, ShieldAlert, Sparkles, AlertCircle, Zap } from 'lucide-react';
+import { UploadCloud, ShieldAlert, Sparkles, AlertCircle } from 'lucide-react';
 import { GithubIcon } from '../components/GithubIcon';
 import { RepositoryUpload } from '../components/RepositoryUpload';
 import { GitHubRepositoryForm } from '../components/GitHubRepositoryForm';
 import { ScanProgressModal } from '../components/ScanProgressModal';
 import { auditsApi, formatApiError } from '../api/client';
 import { saveAuditToHistory } from '../lib/auditStorage';
-import { cn } from '../lib/utils';
 import { toast } from 'sonner';
 
 export const NewAuditPage: React.FC = () => {

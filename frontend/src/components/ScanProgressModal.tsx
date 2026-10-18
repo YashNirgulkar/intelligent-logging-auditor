@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Loader2, ShieldAlert, Cpu, Sparkles, FileSearch } from 'lucide-react';
-import { cn } from '../lib/utils';
 
 interface Props {
   isOpen: boolean;
@@ -26,11 +25,12 @@ export const ScanProgressModal: React.FC<Props> = ({ isOpen, sourceType, targetN
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   useEffect(() => {
-    if (!isOpen) { setCurrentStepIndex(0); return; }
+    if (!isOpen) return;
+    const reset = setTimeout(() => setCurrentStepIndex(0), 0);
     const t1 = setTimeout(() => setCurrentStepIndex(1), 1800);
     const t2 = setTimeout(() => setCurrentStepIndex(2), 4200);
     const t3 = setTimeout(() => setCurrentStepIndex(3), 7500);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    return () => { clearTimeout(reset); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [isOpen]);
 
   if (!isOpen) return null;

@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
 import {
-  FileCode2,
-  ShieldAlert,
   AlertTriangle,
-  Info,
   BookOpen,
   CheckCircle2,
-  ExternalLink,
-  Code2,
 } from 'lucide-react';
 import { SeverityBadge } from '../components/SeverityBadge';
 import { CodeViewer } from '../components/CodeViewer';

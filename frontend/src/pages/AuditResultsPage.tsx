@@ -1,25 +1,19 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
-  ShieldAlert,
   ArrowLeft,
   FolderGit2,
   FileArchive,
   CheckCircle2,
-  AlertTriangle,
   RotateCw,
   Copy,
   Check,
   CheckSquare,
   Square,
-  Sparkles,
-  Download,
   Info,
 } from 'lucide-react';
 import { auditsApi, formatApiError } from '../api/client';
 import { AuditResponse, Finding } from '../types/api';
-import { SeverityBadge } from '../components/SeverityBadge';
-import { StatusBadge } from '../components/StatusBadge';
 import { FindingCard } from '../components/FindingCard';
 import { FindingDetailModal } from '../components/FindingDetailModal';
 import { FindingsFilters } from '../components/FindingsFilters';
@@ -51,7 +45,7 @@ export const AuditResultsPage: React.FC = () => {
   const [isApplying, setIsApplying] = useState(false);
   const [copiedAuditId, setCopiedAuditId] = useState(false);
 
-  const fetchAuditData = async () => {
+  const fetchAuditData = useCallback(async () => {
     if (!auditId) return;
     setIsLoading(true);
     setError(null);
@@ -68,11 +62,12 @@ export const AuditResultsPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [auditId]);
 
   useEffect(() => {
-    fetchAuditData();
-  }, [auditId]);
+    const request = window.setTimeout(() => void fetchAuditData(), 0);
+    return () => window.clearTimeout(request);
+  }, [fetchAuditData]);
 
   // Extract unique files
   const availableFiles = useMemo(() => {
@@ -165,7 +160,7 @@ export const AuditResultsPage: React.FC = () => {
     if (!auditId) return;
     setIsApplying(true);
     try {
-      const res = await auditsApi.applyPatches(auditId, [findingId], true);
+      await auditsApi.applyPatches(auditId, [findingId], true);
       toast.success(`Review marker applied for finding: ${findingId}`);
       updateAuditStatusInHistory(auditId, 'markers_applied');
       setActiveFinding(null);

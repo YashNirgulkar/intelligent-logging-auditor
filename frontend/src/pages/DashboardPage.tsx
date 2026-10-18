@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   ShieldAlert,
   FileSearch,
@@ -25,20 +25,12 @@ import { StatCard } from '../components/StatCard';
 import { AuditTable } from '../components/AuditTable';
 import { getStoredAudits, removeAuditFromHistory } from '../lib/auditStorage';
 import { StoredAuditMeta } from '../types/api';
-import { useBackendStatus } from '../context/BackendStatusContext';
+import { useBackendStatus } from '../context/useBackendStatus';
 import { API_ORIGIN } from '../api/client';
 
 export const DashboardPage: React.FC = () => {
-  const navigate = useNavigate();
   const { status } = useBackendStatus();
-  const [audits, setAudits] = useState<StoredAuditMeta[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const stored = getStoredAudits();
-    setAudits(stored);
-    setIsLoading(false);
-  }, []);
+  const [audits, setAudits] = useState<StoredAuditMeta[]>(getStoredAudits);
 
   const handleDeleteAudit = (id: string) => {
     removeAuditFromHistory(id);
@@ -346,11 +338,9 @@ export const DashboardPage: React.FC = () => {
 
         <AuditTable
           audits={audits.slice(0, 10)}
-          isLoading={isLoading}
           onDelete={handleDeleteAudit}
         />
       </div>
     </div>
   );
 };
-
