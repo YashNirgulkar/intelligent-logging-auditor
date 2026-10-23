@@ -21,14 +21,22 @@ uvicorn app.main:app --reload
 ```
 Docs: http://127.0.0.1:8000/docs
 
-This demo has no sign-in. Anyone who can reach the website can submit scans and use the audit API.
+Users must create an account and sign in before using audit screens or protected API endpoints. Public registration creates standard user accounts only; administrator access is provisioned from the backend's `ADMIN_EMAIL` and `ADMIN_PASSWORD` environment variables.
 
 ## Deploy to Render
-The root `render.yaml` defines a FastAPI service and a static frontend. To deploy, open Render's Blueprint creation page, connect this GitHub repository, and select the Blueprint. The frontend is configured to use the API service URL and the API allows the configured frontend origin. The whole demo and its audit endpoints are public with no sign-in.
+The root `render.yaml` defines a FastAPI service and a static frontend. To deploy, open Render's Blueprint creation page, connect this GitHub repository, and select the Blueprint. The frontend is configured to use the API service URL and the API allows the configured frontend origin. Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in the API service environment before first use. Public registration is enabled, but only the configured administrator can open the user management dashboard.
 
-The free backend configuration stores audit workspaces under `/tmp`; those files can disappear when the service restarts or redeploys. Use a paid persistent disk and set `APP_DATA_DIR` to its mount path if audit history and source workspaces must survive restarts. Optional GitHub and LLM tokens can be set in the backend service environment; do not commit them.
+The free backend configuration stores user accounts and audit workspaces under `/tmp`; these files can disappear when the service restarts or redeploys. Use a persistent disk and set `APP_DATA_DIR` to its mount path if accounts and audit workspaces must survive restarts. The administrator password is a Render secret and must not be committed. Optional GitHub and LLM tokens can be set in the backend service environment; do not commit them.
 
 ## API
+Sign in at `POST /api/v1/auth/login` to receive a bearer token. Send it as `Authorization: Bearer <token>` on protected routes. The admin-only routes are `GET /api/v1/admin/users` and `PATCH /api/v1/admin/users/{user_id}`.
+
+- `POST /api/v1/auth/register` — create a standard account
+- `POST /api/v1/auth/login` — start a session
+- `GET /api/v1/auth/me` — get the signed-in account
+- `POST /api/v1/auth/logout` — revoke the current session
+- `GET /api/v1/admin/users` — list accounts (administrator only)
+- `PATCH /api/v1/admin/users/{user_id}` — enable or disable access (administrator only)
 - `POST /api/v1/audits/upload` multipart ZIP upload
 - `POST /api/v1/audits/github` JSON `{"repo_url":"https://github.com/owner/repo"}`
 - `GET /api/v1/audits/{audit_id}`
@@ -38,5 +46,6 @@ The free backend configuration stores audit workspaces under `/tmp`; those files
 ## Important limitations
 The analyzer uses Python AST analysis and conservative source heuristics for JavaScript/TypeScript, Java, Go, C#, PHP, Ruby, and Rust; it is not a complete control-flow proof. It detects common risky calls in functions without recognized logger calls. Python exception handlers that neither log nor re-raise are also flagged. The approval endpoint adds a review marker comment; it does not blindly inject executable code. Review the proposed snippet and implement the actual fix manually or extend the patch engine with AST-aware edits. Never log secrets, tokens, credentials, personal data, or entire request payloads.
 
-This public demo has shared access: anyone can submit scans and call the API. Do not upload private code or secrets. Consider authentication, rate limiting, cleanup/retention, audit trails, and network egress controls before using it for sensitive production workloads. Repository code is never executed and no changes are pushed to GitHub. GitHub archives are read-only source imports.
+Account passwords are hashed and bearer sessions expire. The app does not verify email ownership or provide password recovery; do not use it as a production identity provider without adding those controls, rate limiting, and an account recovery process. Never upload private code or secrets unless your deployment's data-retention and access controls are configured appropriately. Repository code is never executed and no changes are pushed to GitHub. GitHub archives are read-only source imports.
+
 
