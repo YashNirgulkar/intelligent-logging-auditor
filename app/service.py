@@ -17,13 +17,20 @@ def manifest_path(audit_id: str) -> Path:
     return settings.audits_dir / audit_id / "audit.json"
 
 
-def save_manifest(audit_id: str, source: str, root: Path, findings: list[Finding]) -> None:
+def save_manifest(
+    audit_id: str,
+    source: str,
+    root: Path,
+    findings: list[Finding],
+    owner_id: int | None = None,
+) -> None:
     manifest_path(audit_id).write_text(
         json.dumps(
             {
                 "audit_id": audit_id,
                 "source": source,
                 "root": str(root),
+                "owner_id": owner_id,
                 "findings": [f.model_dump() for f in findings],
             },
             indent=2,
@@ -39,21 +46,21 @@ def load_manifest(audit_id: str):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-async def run_zip(path: str):
+async def run_zip(path: str, owner_id: int | None = None):
     audit_id = new_id()
     root, source = from_zip(path, audit_id)
     findings = analyze_repository(root)
     findings = await enrich_findings(findings)
-    save_manifest(audit_id, source, root, findings)
+    save_manifest(audit_id, source, root, findings, owner_id)
     return audit_id, source, findings
 
 
-async def run_github(url: str):
+async def run_github(url: str, owner_id: int | None = None):
     audit_id = new_id()
     root, source = await from_github(url, audit_id)
     findings = analyze_repository(root)
     findings = await enrich_findings(findings)
-    save_manifest(audit_id, source, root, findings)
+    save_manifest(audit_id, source, root, findings, owner_id)
     return audit_id, source, findings
 
 
@@ -115,3 +122,4 @@ def apply_findings(audit_id: str, ids, approved: bool):
         encoding="utf-8",
     )
     return applied, sorted(changed)
+
