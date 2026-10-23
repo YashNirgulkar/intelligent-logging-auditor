@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 import { cn } from '../lib/utils';
-import { BackendStatusIndicator } from './BackendStatusIndicator';
 import { API_ORIGIN } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
@@ -171,8 +170,6 @@ export const AppSidebar: React.FC<Props> = ({ isOpen = false, onClose }) => {
             background: 'rgba(250, 250, 249, 0.6)',
           }}
         >
-          <BackendStatusIndicator />
-
           <div
             className="flex items-center justify-between text-[11px] px-1 pt-1"
             style={{ color: '#70706d' }}
@@ -194,4 +191,3 @@ export const AppSidebar: React.FC<Props> = ({ isOpen = false, onClose }) => {
     </>
   );
 };
-

@@ -8,7 +8,6 @@ import {
   Bell,
   LogOut,
 } from 'lucide-react';
-import { BackendStatusIndicator } from './BackendStatusIndicator';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -143,11 +142,6 @@ export const TopNavbar: React.FC<Props> = ({
           </button>
         )}
 
-        <div className="hidden sm:block">
-          <BackendStatusIndicator minimal />
-        </div>
-
-
         {/* Notification bell */}
         <button
           className="p-2 rounded-xl transition-colors cursor-pointer relative"
@@ -182,4 +176,3 @@ export const TopNavbar: React.FC<Props> = ({
     </header>
   );
 };
-
