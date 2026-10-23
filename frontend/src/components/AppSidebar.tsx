@@ -15,6 +15,7 @@ import { GithubIcon } from './GithubIcon';
 import { cn } from '../lib/utils';
 import { BackendStatusIndicator } from './BackendStatusIndicator';
 import { API_ORIGIN } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 
 interface Props {
   isOpen?: boolean;
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export const AppSidebar: React.FC<Props> = ({ isOpen = false, onClose }) => {
+  const { user } = useAuth();
   const navItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },
     { label: 'New Audit', path: '/audits/new', icon: PlusCircle },
@@ -30,6 +32,7 @@ export const AppSidebar: React.FC<Props> = ({ isOpen = false, onClose }) => {
     { label: 'GitHub Repositories', path: '/repositories', icon: GithubIcon },
     { label: 'Documentation', path: '/docs', icon: BookOpen },
     { label: 'Settings', path: '/settings', icon: Settings },
+    ...(user?.role === 'admin' ? [{ label: 'Admin users', path: '/admin/users', icon: ShieldCheck }] : []),
   ];
 
   return (

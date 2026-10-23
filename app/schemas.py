@@ -1,6 +1,30 @@
 from pydantic import BaseModel, Field, HttpUrl
 
 
+class AuthCredentials(BaseModel):
+    email: str = Field(min_length=3, max_length=254, pattern=r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+    password: str = Field(min_length=12, max_length=128)
+
+
+class UserResponse(BaseModel):
+    id: int
+    email: str
+    role: str
+    is_active: bool
+    created_at: float
+    last_login_at: float | None
+
+
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
+
+
+class UserAccessRequest(BaseModel):
+    is_active: bool
+
+
 class GitHubAuditRequest(BaseModel):
     repo_url: HttpUrl
 
