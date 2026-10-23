@@ -39,8 +39,8 @@ apiClient.interceptors.request.use((config) => {
 });
 
 export const authApi = {
-  async register(email: string, password: string): Promise<UserAccount> {
-    const response = await apiClient.post<UserAccount>('/api/v1/auth/register', { email, password });
+  async register(profile: { first_name: string; last_name: string; email: string; password: string; position: string }): Promise<UserAccount> {
+    const response = await apiClient.post<UserAccount>('/api/v1/auth/register', profile);
     return response.data;
   },
   async login(email: string, password: string): Promise<AuthResponse> {
@@ -184,4 +184,3 @@ export const auditsApi = {
     return response.data;
   },
 };
-
