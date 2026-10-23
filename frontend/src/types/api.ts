@@ -63,6 +63,21 @@ export interface HealthResponse {
   status: string;
 }
 
+export interface UserAccount {
+  id: number;
+  email: string;
+  role: 'user' | 'admin';
+  is_active: boolean;
+  created_at: number;
+  last_login_at: number | null;
+}
+
+export interface AuthResponse {
+  access_token: string;
+  token_type: 'bearer';
+  user: UserAccount;
+}
+
 export interface StoredAuditMeta {
   audit_id: string;
   source: string;
