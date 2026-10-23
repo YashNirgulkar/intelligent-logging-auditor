@@ -137,3 +137,209 @@ table { border-collapse: separate; border-spacing: 0; }
 .dark body { background: var(--bg); color: var(--text-primary); }
 .dark .glass-card { background: #242423; }
 .dark .nav-active { background: #333331; border-color: #444442 !important; color: #fff; }
+
+.print-report-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  html,
+  body,
+  #root {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #171717 !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  body:has(.audit-results-page) aside,
+  body:has(.audit-results-page) header:not(.print-report-header) {
+    display: none !important;
+  }
+
+  body:has(.audit-results-page) [class~="lg:pl-64"] {
+    display: block !important;
+    padding-left: 0 !important;
+  }
+
+  body:has(.audit-results-page) main {
+    display: block !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .audit-results-page,
+  .audit-results-page * {
+    visibility: visible !important;
+  }
+
+  .audit-results-page {
+    display: block !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #171717 !important;
+    background: #fff !important;
+    animation: none !important;
+  }
+
+  .screen-report-only {
+    display: none !important;
+  }
+
+  .print-report-only {
+    display: block !important;
+    color: #171717 !important;
+    font-family: Arial, sans-serif;
+    font-size: 10pt;
+  }
+
+  .print-report-header {
+    border-bottom: 2px solid #292928;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .print-report-header h1 {
+    margin: 0 0 12px;
+    font-size: 22pt;
+  }
+
+  .print-report-header p {
+    margin: 4px 0;
+  }
+
+  .print-report-kicker {
+    color: #555;
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .print-report-summary {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 16px 0 24px;
+  }
+
+  .print-report-summary div {
+    border: 1px solid #bbb;
+    padding: 8px;
+  }
+
+  .print-report-summary strong,
+  .print-report-summary span {
+    display: block;
+  }
+
+  .print-report-summary strong {
+    font-size: 16pt;
+  }
+
+  .print-report-summary span {
+    color: #444;
+    font-size: 8pt;
+  }
+
+  .print-findings-heading {
+    border-bottom: 1px solid #999;
+    margin: 0 0 12px;
+    padding-bottom: 6px;
+    font-size: 16pt;
+  }
+
+  .print-findings-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .print-finding {
+    break-inside: avoid;
+    border: 1px solid #bbb;
+    margin: 0 0 12px;
+    padding: 12px;
+  }
+
+  .print-finding-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .print-finding-heading h3 {
+    margin: 0 0 8px;
+    font-size: 12pt;
+  }
+
+  .print-risk {
+    flex: none;
+    border: 1px solid #888;
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-size: 8pt;
+    text-transform: capitalize;
+  }
+
+  .print-finding-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px 14px;
+    margin: 4px 0 10px;
+  }
+
+  .print-finding-meta div {
+    display: flex;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .print-finding-meta dt {
+    flex: none;
+    color: #555;
+    font-weight: 700;
+  }
+
+  .print-finding-meta dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .print-finding-rationale {
+    margin: 8px 0;
+    line-height: 1.45;
+  }
+
+  .print-suggestion pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    border: 1px solid #ddd;
+    background: #f6f6f6 !important;
+    padding: 8px;
+    font-family: Consolas, monospace;
+    font-size: 8.5pt;
+  }
+
+  .print-report-footer {
+    border-top: 1px solid #bbb;
+    margin-top: 18px;
+    padding-top: 8px;
+    color: #444;
+    font-size: 8pt;
+  }
+}

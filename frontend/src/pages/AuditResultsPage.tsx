@@ -11,6 +11,7 @@ import {
   CheckSquare,
   Square,
   Info,
+  Printer,
 } from 'lucide-react';
 import { auditsApi, formatApiError } from '../api/client';
 import { AuditResponse, Finding } from '../types/api';
@@ -220,7 +221,58 @@ export const AuditResultsPage: React.FC = () => {
   const appliedCount = audit.findings.filter((f) => f.status === 'approved_marker_applied').length;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+    <div className="audit-results-page max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+      <section className="print-report-only" aria-label="Printable audit report">
+        <header className="print-report-header">
+          <p className="print-report-kicker">Intelligent Logging Auditor</p>
+          <h1>Audit Report: {isGithub ? audit.source.replace('https://github.com/', '') : 'Uploaded ZIP Repository'}</h1>
+          <p><strong>Source:</strong> {audit.source}</p>
+          <p><strong>Audit ID:</strong> {audit.audit_id}</p>
+          <p><strong>Printed:</strong> {new Date().toLocaleString()}</p>
+        </header>
+
+        <section className="print-report-summary" aria-label="Finding totals">
+          <div><strong>{audit.findings.length}</strong><span>Total findings</span></div>
+          <div><strong>{highCount}</strong><span>High</span></div>
+          <div><strong>{medCount}</strong><span>Medium</span></div>
+          <div><strong>{lowCount}</strong><span>Low</span></div>
+          <div><strong>{appliedCount}</strong><span>Review markers applied</span></div>
+        </section>
+
+        <h2 className="print-findings-heading">Findings ({audit.findings.length})</h2>
+        {audit.findings.length === 0 ? (
+          <p>No findings were detected in the inspected supported source files.</p>
+        ) : (
+          <ol className="print-findings-list">
+            {audit.findings.map((finding, index) => (
+              <li className="print-finding" key={finding.id}>
+                <div className="print-finding-heading">
+                  <h3>{index + 1}. {finding.title}</h3>
+                  <span className={`print-risk print-risk-${finding.risk.toLowerCase()}`}>
+                    {finding.risk} priority
+                  </span>
+                </div>
+                <dl className="print-finding-meta">
+                  <div><dt>Rule</dt><dd>{finding.rule}</dd></div>
+                  <div><dt>File</dt><dd>{finding.file_path}:{finding.line}</dd></div>
+                  {finding.function_name && <div><dt>Function</dt><dd>{finding.function_name}()</dd></div>}
+                  <div><dt>Status</dt><dd>{finding.status === 'approved_marker_applied' ? 'Review marker applied' : 'Suggested'}</dd></div>
+                </dl>
+                <p className="print-finding-rationale"><strong>Why it was flagged:</strong> {finding.rationale}</p>
+                <div className="print-suggestion">
+                  <strong>Suggested logging:</strong>
+                  <pre>{finding.suggested_code || 'No code suggestion provided.'}</pre>
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
+        <footer className="print-report-footer">
+          This report contains static-analysis suggestions. Review the code and adapt recommendations before applying them.
+        </footer>
+      </section>
+
+      <div className="screen-report-only space-y-6">
       {/* Top back navigation */}
       <div className="flex items-center justify-between">
         <Link
@@ -231,13 +283,23 @@ export const AuditResultsPage: React.FC = () => {
           <span>Back to Dashboard</span>
         </Link>
 
-        <button
-          onClick={fetchAuditData}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-slate-900 border border-slate-800 transition-colors cursor-pointer"
-        >
-          <RotateCw className="w-3.5 h-3.5" />
-          <span>Refresh Audit</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-slate-900 border border-slate-800 transition-colors cursor-pointer"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print report</span>
+          </button>
+          <button
+            onClick={fetchAuditData}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-slate-900 border border-slate-800 transition-colors cursor-pointer"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+            <span>Refresh Audit</span>
+          </button>
+        </div>
       </div>
 
       {/* Audit Summary Header Card */}
@@ -411,6 +473,8 @@ export const AuditResultsPage: React.FC = () => {
         onConfirm={handleApplyBatch}
         isApplying={isApplying}
       />
+      </div>
     </div>
   );
 };
+
