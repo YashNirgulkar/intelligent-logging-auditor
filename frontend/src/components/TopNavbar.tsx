@@ -6,8 +6,11 @@ import {
   RefreshCw,
   Terminal,
   Bell,
+  LogOut,
 } from 'lucide-react';
 import { BackendStatusIndicator } from './BackendStatusIndicator';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   onToggleSidebar: () => void;
@@ -21,6 +24,8 @@ export const TopNavbar: React.FC<Props> = ({
   isRefreshing = false,
 }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const pathParts = location.pathname.split('/').filter(Boolean);
 
   let pageTitle = 'Dashboard';
@@ -42,6 +47,8 @@ export const TopNavbar: React.FC<Props> = ({
     pageTitle = 'Settings & Engine Config';
   } else if (pathParts[0] === 'docs' || pathParts[0] === 'documentation') {
     pageTitle = 'API Documentation';
+  } else if (pathParts[0] === 'admin') {
+    pageTitle = 'User Access';
   }
 
   return (
@@ -109,6 +116,13 @@ export const TopNavbar: React.FC<Props> = ({
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2 md:gap-3">
+        <span className="hidden md:inline max-w-52 truncate text-xs" style={{ color: '#62625f' }}>{user?.email}</span>
+        <button
+          onClick={async () => { try { await logout(); } finally { navigate('/login', { replace: true }); } }}
+          className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium"
+          style={{ color: '#4f4f4c', background: '#fff', border: '1px solid #e2e2df' }}
+          title="Sign out"
+        ><LogOut className="w-3.5 h-3.5" /><span className="hidden sm:inline">Sign out</span></button>
         {onRefresh && (
           <button
             onClick={onRefresh}
