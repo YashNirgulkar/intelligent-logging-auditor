@@ -65,7 +65,10 @@ export interface HealthResponse {
 
 export interface UserAccount {
   id: number;
+  first_name: string;
+  last_name: string;
   email: string;
+  position: string;
   role: 'user' | 'admin';
   is_active: boolean;
   created_at: number;
@@ -88,4 +91,3 @@ export interface StoredAuditMeta {
   lowCount: number;
   status: 'completed' | 'markers_applied';
 }
-

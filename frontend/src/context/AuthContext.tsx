@@ -7,7 +7,7 @@ interface AuthContextValue {
   user: UserAccount | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (profile: { first_name: string; last_name: string; email: string; password: string; position: string }) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -39,9 +39,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(result.user);
   };
 
-  const register = async (email: string, password: string) => {
-    await authApi.register(email, password);
-    await login(email, password);
+  const register = async (profile: { first_name: string; last_name: string; email: string; password: string; position: string }) => {
+    await authApi.register(profile);
+    await login(profile.email, profile.password);
   };
 
   const logout = async () => {
@@ -65,4 +65,3 @@ export function useAuth(): AuthContextValue {
   if (!context) throw new Error('useAuth must be used inside AuthProvider');
   return context;
 }
-

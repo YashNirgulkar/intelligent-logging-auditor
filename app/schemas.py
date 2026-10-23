@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 
 class AuthCredentials(BaseModel):
@@ -6,9 +6,26 @@ class AuthCredentials(BaseModel):
     password: str = Field(min_length=12, max_length=128)
 
 
+class RegisterRequest(AuthCredentials):
+    first_name: str = Field(min_length=1, max_length=80)
+    last_name: str = Field(min_length=1, max_length=80)
+    position: str = Field(min_length=2, max_length=80)
+
+    @field_validator("first_name", "last_name", "position")
+    @classmethod
+    def trim_profile_fields(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("This field cannot be blank.")
+        return value
+
+
 class UserResponse(BaseModel):
     id: int
+    first_name: str
+    last_name: str
     email: str
+    position: str
     role: str
     is_active: bool
     created_at: float
@@ -47,4 +64,3 @@ class AuditResponse(BaseModel):
     source: str
     findings: list[Finding]
     summary: dict[str, int]
-

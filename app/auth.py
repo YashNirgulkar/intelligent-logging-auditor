@@ -49,7 +49,10 @@ def _verify_password(password: str, encoded: str) -> bool:
 def _public_user(row: sqlite3.Row) -> dict[str, Any]:
     return {
         "id": row["id"],
+        "first_name": row["first_name"],
+        "last_name": row["last_name"],
         "email": row["email"],
+        "position": row["position"],
         "role": row["role"],
         "is_active": bool(row["is_active"]),
         "created_at": row["created_at"],
@@ -64,7 +67,10 @@ def init_auth_store() -> None:
             """
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                first_name TEXT NOT NULL DEFAULT '',
+                last_name TEXT NOT NULL DEFAULT '',
                 email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+                position TEXT NOT NULL DEFAULT 'Other',
                 password_hash TEXT NOT NULL,
                 role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
                 is_active INTEGER NOT NULL DEFAULT 1,
@@ -80,6 +86,15 @@ def init_auth_store() -> None:
             CREATE INDEX IF NOT EXISTS sessions_user_id_idx ON sessions(user_id);
             """
         )
+        # Upgrade databases created before profile fields were added.
+        columns = {row["name"] for row in db.execute("PRAGMA table_info(users)")}
+        for name, declaration in (
+            ("first_name", "TEXT NOT NULL DEFAULT ''"),
+            ("last_name", "TEXT NOT NULL DEFAULT ''"),
+            ("position", "TEXT NOT NULL DEFAULT 'Other'"),
+        ):
+            if name not in columns:
+                db.execute(f"ALTER TABLE users ADD COLUMN {name} {declaration}")
         email = settings.admin_email.strip().lower()
         if bool(email) != bool(settings.admin_password):
             raise RuntimeError("Configure both ADMIN_EMAIL and ADMIN_PASSWORD, or leave both empty.")
@@ -96,13 +111,24 @@ def init_auth_store() -> None:
             )
 
 
-def register_user(email: str, password: str) -> dict[str, Any]:
+def register_user(
+    first_name: str, last_name: str, email: str, password: str, position: str
+) -> dict[str, Any]:
     normalized = email.strip().lower()
     try:
         with _connect() as db:
             cursor = db.execute(
-                "INSERT INTO users (email, password_hash, created_at) VALUES (?, ?, ?)",
-                (normalized, _hash_password(password), time.time()),
+                """INSERT INTO users
+                   (first_name, last_name, email, position, password_hash, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
+                (
+                    first_name.strip(),
+                    last_name.strip(),
+                    normalized,
+                    position.strip(),
+                    _hash_password(password),
+                    time.time(),
+                ),
             )
             row = db.execute("SELECT * FROM users WHERE id = ?", (cursor.lastrowid,)).fetchone()
     except sqlite3.IntegrityError as exc:
@@ -190,4 +216,3 @@ def admin_user(user: dict[str, Any] = Depends(current_user)) -> dict[str, Any]:
     if user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Administrator access is required.")
     return user
-

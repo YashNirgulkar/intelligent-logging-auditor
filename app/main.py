@@ -29,6 +29,7 @@ from app.schemas import (
     AuthResponse,
     Finding,
     GitHubAuditRequest,
+    RegisterRequest,
     UserAccessRequest,
     UserResponse,
 )
@@ -90,9 +91,15 @@ def _ensure_audit_access(data: dict, user: dict) -> None:
 
 
 @app.post("/api/v1/auth/register", response_model=UserResponse, status_code=201)
-def register(request: AuthCredentials):
+def register(request: RegisterRequest):
     """Create a standard account. Administrator privileges are configured by the operator."""
-    return register_user(request.email, request.password)
+    return register_user(
+        request.first_name,
+        request.last_name,
+        request.email,
+        request.password,
+        request.position,
+    )
 
 
 @app.post("/api/v1/auth/login", response_model=AuthResponse)
@@ -354,4 +361,3 @@ async def apply(
             status_code=400,
             detail=str(exc),
         ) from exc
-
