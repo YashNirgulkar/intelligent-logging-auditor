@@ -226,7 +226,7 @@ export const DocumentationPage: React.FC = () => {
       </div>
 
       <section className="rounded-2xl border border-amber-900/40 bg-amber-950/20 p-4 text-xs leading-relaxed text-slate-300">
-        <strong className="text-amber-300">Authentication required:</strong> Create an account at <code className="text-slate-100">POST /api/v1/auth/register</code>, then sign in at <code className="text-slate-100">POST /api/v1/auth/login</code>. Include the returned token as <code className="text-slate-100">Authorization: Bearer &lt;token&gt;</code> on audit requests. The user list and access controls at <code className="text-slate-100">/api/v1/admin/users</code> require an administrator account.
+        <strong className="text-amber-300">Public portfolio demo:</strong> The audit API is open without accounts. Audit IDs are unique references, and scan workspaces may be temporary on the hosted demo. Use public sample repositories only; do not upload private or sensitive source code.
       </section>
 
       {/* Architecture & Safety Guarantees Overview Cards */}
@@ -522,4 +522,3 @@ export const DocumentationPage: React.FC = () => {
     </div>
   );
 };
-
