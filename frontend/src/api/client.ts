@@ -6,8 +6,6 @@ import {
   ApplyResponse,
   GitHubAuditRequest,
   HealthResponse,
-  AuthResponse,
-  UserAccount,
 } from '../types/api';
 
 // Configurable API Base URL
@@ -31,41 +29,6 @@ export const apiClient = axios.create({
     'Accept': 'application/json',
   },
 });
-
-apiClient.interceptors.request.use((config) => {
-  const token = typeof window !== 'undefined' ? window.sessionStorage.getItem('ila_access_token') : null;
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-export const authApi = {
-  async register(profile: { first_name: string; last_name: string; email: string; password: string; position: string }): Promise<UserAccount> {
-    const response = await apiClient.post<UserAccount>('/api/v1/auth/register', profile);
-    return response.data;
-  },
-  async login(email: string, password: string): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/api/v1/auth/login', { email, password });
-    return response.data;
-  },
-  async me(): Promise<UserAccount> {
-    const response = await apiClient.get<UserAccount>('/api/v1/auth/me');
-    return response.data;
-  },
-  async logout(): Promise<void> {
-    await apiClient.post('/api/v1/auth/logout');
-  },
-};
-
-export const adminApi = {
-  async getUsers(): Promise<UserAccount[]> {
-    const response = await apiClient.get<UserAccount[]>('/api/v1/admin/users');
-    return response.data;
-  },
-  async setAccess(userId: number, isActive: boolean): Promise<UserAccount> {
-    const response = await apiClient.patch<UserAccount>(`/api/v1/admin/users/${userId}`, { is_active: isActive });
-    return response.data;
-  },
-};
 
 // Response error handler to extract structured FastAPI error details
 export function formatApiError(error: unknown): string {

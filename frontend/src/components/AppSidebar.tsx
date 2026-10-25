@@ -14,7 +14,6 @@ import {
 import { GithubIcon } from './GithubIcon';
 import { cn } from '../lib/utils';
 import { API_ORIGIN } from '../api/client';
-import { useAuth } from '../context/AuthContext';
 
 interface Props {
   isOpen?: boolean;
@@ -22,7 +21,6 @@ interface Props {
 }
 
 export const AppSidebar: React.FC<Props> = ({ isOpen = false, onClose }) => {
-  const { user } = useAuth();
   const navItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },
     { label: 'New Audit', path: '/audits/new', icon: PlusCircle },
@@ -31,7 +29,6 @@ export const AppSidebar: React.FC<Props> = ({ isOpen = false, onClose }) => {
     { label: 'GitHub Repositories', path: '/repositories', icon: GithubIcon },
     { label: 'Documentation', path: '/docs', icon: BookOpen },
     { label: 'Settings', path: '/settings', icon: Settings },
-    ...(user?.role === 'admin' ? [{ label: 'Admin users', path: '/admin/users', icon: ShieldCheck }] : []),
   ];
 
   return (
@@ -78,7 +75,7 @@ export const AppSidebar: React.FC<Props> = ({ isOpen = false, onClose }) => {
             </h1>
             <p className="text-[11px] flex items-center gap-1" style={{ color: '#555552' }}>
               <Zap className="w-2.5 h-2.5" />
-              AI-Powered Platform
+              Portfolio Demo
             </p>
           </div>
         </div>
