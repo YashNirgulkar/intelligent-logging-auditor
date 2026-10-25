@@ -3,6 +3,7 @@ import logging
 import tempfile
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Annotated
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -71,8 +72,8 @@ async def health():
     response_model=AuditResponse,
 )
 async def upload(
-    file: UploadFile = File(...),
-):  # noqa: B008
+    file: Annotated[UploadFile, File()],
+):
     if not file.filename or not file.filename.lower().endswith(".zip"):
         raise HTTPException(
             status_code=400,
@@ -282,3 +283,4 @@ async def apply(
             status_code=400,
             detail=str(exc),
         ) from exc
+
